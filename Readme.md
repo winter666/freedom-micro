@@ -16,6 +16,10 @@
 - syntax in .env ```
   PARAM_NAME=PARAM_VALUE
   PARAM_2NAME=PARAM2_VALUE```
+  
+### Setup (requirements)
+- create ```/config/server.php```
+- add `public_path` with path to your public directory
 
 ## DB Query Builder with Model concept
 - need to extend your table from ```Winter666\Freedom\Modules\DB\Model```

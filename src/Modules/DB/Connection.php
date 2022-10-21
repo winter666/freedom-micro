@@ -3,6 +3,7 @@
 
 namespace Winter666\Freedom\Modules\DB;
 
+use Winter666\Freedom\Modules\DB\Exceptions\DBConnectException;
 use Winter666\Freedom\Modules\Dotenv\Env;
 use PDO;
 
@@ -42,7 +43,12 @@ class Connection
     }
 
     private function setConnection() {
-        $this->connection = new PDO($this->db . ':host='.$this->host.';dbname='. $this->db_name, $this->username, $this->password);
+        try {
+            $this->connection = new PDO($this->db . ':host=' . $this->host . ';dbname=' . $this->db_name, $this->username, $this->password);
+        } catch (\PDOException $e) {
+            throw new DBConnectException($e->getMessage(), $e->getCode(), $e->getPrevious());
+        }
+
         $this->connection_id = rand(1000, 9999);
         $this->connections[$this->connection_id] = $this->connection;
     }

@@ -4,6 +4,7 @@
 namespace Winter666\Freedom\Modules\Dotenv;
 
 use Winter666\Freedom\Modules\Config\Config;
+use Winter666\Freedom\Modules\Dotenv\Exceptions\BaseRequirementsException;
 
 class Env
 {
@@ -20,10 +21,15 @@ class Env
 
     public function getAll(): array {
         $config = Config::getInstance()->get('server');
+
+        if (empty($config)) {
+            throw new BaseRequirementsException();
+        }
+
         $fileContent = file_get_contents(
             str_replace($config['public_path'],
                 '',
-                $_SERVER['DOCUMENT_ROOT']). '/' . $this->name
+                $_SERVER['DOCUMENT_ROOT']) . '/' . $this->name
         );
 
         $rows = explode("\n", $fileContent);

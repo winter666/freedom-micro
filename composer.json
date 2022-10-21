@@ -3,7 +3,10 @@
     "autoload": {
         "psr-4": {
             "Winter666\\Freedom\\": "src/"
-        }
+        },
+        "files": [
+            "helpers/functions.php"
+        ]
     },
     "authors": [
         {
