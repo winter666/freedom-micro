@@ -2,7 +2,7 @@
     "name": "serge/freedom",
     "autoload": {
         "psr-4": {
-            "Serge\\Freedom\\": "src/"
+            "Winter666\\Freedom\\": "src/"
         }
     },
     "authors": [
