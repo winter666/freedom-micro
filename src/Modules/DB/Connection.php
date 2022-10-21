@@ -4,7 +4,6 @@
 namespace Winter666\Freedom\Modules\DB;
 
 use Winter666\Freedom\Modules\DB\Exceptions\DBConnectException;
-use Winter666\Freedom\Modules\Dotenv\Env;
 use PDO;
 
 class Connection
@@ -20,12 +19,11 @@ class Connection
     private string $password;
 
     private function __construct() {
-        $env = Env::getInstance();
-        $this->db = (string) $env->get('DB');
-        $this->host = (string) $env->get('DB_HOST');
-        $this->db_name = (string) $env->get('DB_NAME');
-        $this->username = (string) $env->get('DB_USERNAME');
-        $this->password = (string) $env->get('DB_PASSWORD');
+        $this->db = (string) env('DB');
+        $this->host = (string) env('DB_HOST');
+        $this->db_name = (string) env('DB_NAME');
+        $this->username = (string) env('DB_USERNAME');
+        $this->password = (string) env('DB_PASSWORD');
 
         $this->setConnection();
     }

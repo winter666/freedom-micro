@@ -3,7 +3,7 @@
 ## Easy to configure your custom project settings with Config module
 
 - path ```/config/<config_name>.php```
-- get ```Config::getInstance()->get('<config_name>')```
+- get ```Config::getInstance()->get('<config_name>')``` or ```config('<config_name>')```
 - syntax in <config_name>.php ```
   return [
   "param 1" => "value1",
@@ -12,7 +12,7 @@
 
 ## Using .env file with Env Module
 - path ```/.env```
-- get ```Env::getInstance()->get('PARAM_NAME')```
+- get ```Env::getInstance()->get('PARAM_NAME')``` or ```env('PARAM_NAME')```
 - syntax in .env ```
   PARAM_NAME=PARAM_VALUE
   PARAM_2NAME=PARAM2_VALUE```

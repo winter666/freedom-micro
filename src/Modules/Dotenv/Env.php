@@ -3,7 +3,6 @@
 
 namespace Winter666\Freedom\Modules\Dotenv;
 
-use Winter666\Freedom\Modules\Config\Config;
 use Winter666\Freedom\Modules\Dotenv\Exceptions\BaseRequirementsException;
 
 class Env
@@ -20,7 +19,7 @@ class Env
     }
 
     public function getAll(): array {
-        $config = Config::getInstance()->get('server');
+        $config = config('server');
 
         if (empty($config)) {
             throw new BaseRequirementsException();
