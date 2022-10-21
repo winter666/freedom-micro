@@ -11,5 +11,7 @@
             "email": "sergeev.davutt@gmail.com"
         }
     ],
-    "require": {}
+    "require": {
+        "ext-pdo": "*"
+    }
 }

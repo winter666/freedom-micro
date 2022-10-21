@@ -1,6 +1,6 @@
-# Freedom framework
+# Freedom micro-framework
 
-## Easy to configure your custom project settings
+## Easy to configure your custom project settings with Config module
 
 - path ```/config/<config_name>.php```
 - get ```Config::getInstance()->get('<config_name>')```
@@ -10,4 +10,6 @@
   "param 2" => "value2",
   ]```
 
-## Using .env file
+## Using .env file with Env Module
+
+## DB Query Builder with Model concept
