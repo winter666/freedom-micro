@@ -1,0 +1,15 @@
+{
+    "name": "serge/freedom",
+    "autoload": {
+        "psr-4": {
+            "Serge\\Freedom\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Davut Sergeev",
+            "email": "sergeev.davutt@gmail.com"
+        }
+    ],
+    "require": {}
+}
