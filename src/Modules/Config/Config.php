@@ -6,20 +6,25 @@ namespace Winter666\Freedom\Modules\Config;
 
 class Config
 {
-    protected string $config_path;
+    private static Config|null $instance = null;
 
-    public function __construct()
-    {
-        $this->config_path = str_replace('/public', '', $_SERVER['DOCUMENT_ROOT']). '/config/';
-    }
+    private function __construct() {}
 
     public static function getInstance(): static {
-        return new static;
+        if (static::$instance === null) {
+            static::$instance = new static;
+        }
+
+        return static::$instance;
+    }
+
+    public static function issetInstance(): bool {
+        return static::$instance !== null;
     }
 
     public function get(string $configName): array
     {
-        $path = $this->config_path . $configName . '.php';
+        $path = config_path() . $configName . '.php';
         if (file_exists($path)) {
             return include($path);
         }

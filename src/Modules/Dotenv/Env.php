@@ -3,39 +3,31 @@
 
 namespace Winter666\Freedom\Modules\Dotenv;
 
-use Winter666\Freedom\Modules\Dotenv\Exceptions\BaseRequirementsException;
-
 class Env
 {
-    protected string $name;
+    private static Env|null $instance = null;
 
-    public function __construct(string $name = '.env')
-    {
-        $this->name = $name;
-    }
+    private function __construct() {}
 
     public static function getInstance(): static {
-        return new static;
+        if (static::$instance === null) {
+            static::$instance = new static;
+        }
+
+        return static::$instance;
     }
 
     public function getAll(): array {
-        $config = config('server');
-
-        if (empty($config)) {
-            throw new BaseRequirementsException();
-        }
-
-        $fileContent = file_get_contents(
-            str_replace($config['public_path'],
-                '',
-                $_SERVER['DOCUMENT_ROOT']) . '/' . $this->name
-        );
-
+        $fileContent = file_get_contents(env_path());
         $rows = explode("\n", $fileContent);
         $data = [];
         foreach ($rows as $row) {
             $item = explode('=', $row);
             $name = $item[0];
+            if (str_starts_with($name, '#')) {
+                continue;
+            }
+
             $value = $item[1] ?? null;
             if (!empty($name) && empty($data[$name])) {
                 $data[trim($name)] = trim($value);
