@@ -1,15 +1,14 @@
 <?php
 
 
-namespace Winter666\Freedom\Modules\DB;
+namespace Freedom\Modules\DB;
 
-use Winter666\Freedom\Modules\DB\Exceptions\DBConnectException;
-use PDO;
+use Freedom\Modules\DB\Exceptions\DBConnectException;
 
 class Connection
 {
     private static Connection|null $instance = null;
-    private PDO $connection;
+    private \PDO $connection;
     public string $connection_id;
     public array $connections;
     private string $db;
@@ -36,13 +35,13 @@ class Connection
         return static::$instance;
     }
 
-    public function getConnection(): PDO {
+    public function getConnection(): \PDO {
         return $this->connection;
     }
 
     private function setConnection() {
         try {
-            $this->connection = new PDO($this->db . ':host=' . $this->host . ';dbname=' . $this->db_name, $this->username, $this->password);
+            $this->connection = new \PDO($this->db . ':host=' . $this->host . ';dbname=' . $this->db_name, $this->username, $this->password);
         } catch (\PDOException $e) {
             throw new DBConnectException($e->getMessage(), $e->getCode(), $e->getPrevious());
         }

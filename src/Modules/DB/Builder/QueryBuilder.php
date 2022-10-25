@@ -1,17 +1,17 @@
 <?php
 
 
-namespace Winter666\Freedom\Modules\DB\Builder;
+namespace Freedom\Modules\DB\Builder;
 
 
 
-use Winter666\Freedom\Modules\DB\Builder\Clause\CreateClause;
-use Winter666\Freedom\Modules\DB\Builder\Clause\DeleteClause;
-use Winter666\Freedom\Modules\DB\Builder\Clause\SelectClause;
-use Winter666\Freedom\Modules\DB\Builder\Clause\UpdateClause;
-use Winter666\Freedom\Modules\DB\Builder\Clause\WhereClause;
-use Winter666\Freedom\Modules\DB\Connection;
-use Winter666\Freedom\Modules\DB\Model;
+use Freedom\Modules\DB\Builder\Clause\CreateClause;
+use Freedom\Modules\DB\Builder\Clause\DeleteClause;
+use Freedom\Modules\DB\Builder\Clause\SelectClause;
+use Freedom\Modules\DB\Builder\Clause\UpdateClause;
+use Freedom\Modules\DB\Builder\Clause\WhereClause;
+use Freedom\Modules\DB\Connection;
+use Freedom\Modules\DB\Model;
 
 class QueryBuilder
 {

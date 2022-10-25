@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Winter666\Freedom\Modules\Config;
+namespace Freedom\Modules\Config;
 
 
 class Config

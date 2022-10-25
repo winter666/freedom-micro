@@ -1,10 +1,8 @@
 <?php
 
 
-namespace Winter666\Freedom\Modules\Dotenv\Exceptions;
+namespace Freedom\Modules\Dotenv\Exceptions;
 
-
-use Throwable;
 
 class DotenvException extends \Exception
 {
@@ -12,7 +10,7 @@ class DotenvException extends \Exception
 
     protected const STATUSES = [];
 
-    public function __construct($message = "", $code = self::STATUS_CODE_ONE, Throwable $previous = null)
+    public function __construct($message = "", $code = self::STATUS_CODE_ONE, \Throwable $previous = null)
     {
         if (!empty(static::STATUSES[$code])) {
             $message = static::STATUSES[$code];

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Winter666\Freedom\Modules\Helpers\String;
+namespace Freedom\Modules\Helpers\String;
 
 
 class Str

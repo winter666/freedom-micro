@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Winter666\Freedom\Modules\DB\Builder\Clause;
+namespace Freedom\Modules\DB\Builder\Clause;
 
 
 class WhereClause extends AbstractClause

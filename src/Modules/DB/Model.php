@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Winter666\Freedom\Modules\DB;
+namespace Freedom\Modules\DB;
 
 
 use Winter666\Freedom\Modules\DB\Builder\Query;

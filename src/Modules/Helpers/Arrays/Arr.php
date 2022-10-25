@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Winter666\Freedom\Modules\Helpers\Arrays;
+namespace Freedom\Modules\Helpers\Arrays;
 
 
 class Arr

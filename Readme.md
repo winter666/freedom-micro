@@ -22,5 +22,5 @@
 - add `public_path` with path to your public directory
 
 ## DB Query Builder with Model concept
-- need to extend your table from ```Winter666\Freedom\Modules\DB\Model```
+- need to extend your table from ```Freedom\Modules\DB\Model```
 - set table name into your model ```protected static string $table = '<table_name>';```

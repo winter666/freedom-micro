@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Winter666\Freedom\Modules\Dotenv;
+namespace Freedom\Modules\Dotenv;
 
 class Env
 {

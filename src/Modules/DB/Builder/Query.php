@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Winter666\Freedom\Modules\DB\Builder;
+namespace Freedom\Modules\DB\Builder;
 
 
 

@@ -1,8 +1,8 @@
 {
-    "name": "serge/freedom",
+    "name": "winter666/freedom",
     "autoload": {
         "psr-4": {
-            "Winter666\\Freedom\\": "src/"
+            "Freedom\\": "src/"
         },
         "files": [
             "helpers/functions.php"

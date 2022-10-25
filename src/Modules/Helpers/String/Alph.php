@@ -1,10 +1,10 @@
 <?php
 
 
-namespace Winter666\Freedom\Modules\Helpers\String;
+namespace Freedom\Modules\Helpers\String;
 
 
-use Winter666\Freedom\Modules\Helpers\String\Exceptions\LangNotFoundException;
+use Freedom\Modules\Helpers\String\Exceptions\LangNotFoundException;
 
 class Alph
 {
