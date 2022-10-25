@@ -4,8 +4,6 @@
 namespace Winter666\Freedom\Modules\Helpers\String;
 
 
-use JetBrains\PhpStorm\Pure;
-
 class Str
 {
     /**
