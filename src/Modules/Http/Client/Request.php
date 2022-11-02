@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Freedom\Modules\Http;
+namespace Freedom\Modules\Http\Client;
 
 
 use Freedom\Modules\Http\Exceptions\RequestException;

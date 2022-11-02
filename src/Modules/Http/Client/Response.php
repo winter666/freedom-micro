@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Freedom\Modules\Http;
+namespace Freedom\Modules\Http\Client;
 
 
 class Response
