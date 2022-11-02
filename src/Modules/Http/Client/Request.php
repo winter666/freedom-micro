@@ -11,10 +11,18 @@ class Request
     private \CurlHandle $curl;
     public RequestOptions $options;
 
-    public function __construct()
+    public function __construct(array $options = [])
     {
         $this->curl = curl_init();
         $this->options = new RequestOptions();
+
+        if (!empty($options)) {
+            $this->setOptions($options);
+
+            if (isset($options['base_uri'])) {
+                $this->setBaseUri($options['base_uri']);
+            }
+        }
     }
 
     /**
