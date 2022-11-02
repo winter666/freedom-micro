@@ -10,7 +10,6 @@ class Request
 {
     private \CurlHandle $curl;
     public RequestOptions $options;
-    public Response $response;
 
     public function __construct()
     {
@@ -34,7 +33,7 @@ class Request
         $this->options->setBaseUri($baseUri);
     }
 
-    public function fetchRequest(string|null $url = null, string|null $method = null) {
+    public function fetchRequest(string|null $url = null, string|null $method = null): Response {
         $options = [];
         if (!is_null($url)) {
             $options['url'] = $url;
@@ -45,53 +44,51 @@ class Request
         }
 
         $this->options->inject($this->curl, $options, false);
-        $this->response = new Response($this->curl);
+        $response = new Response($this->curl);
 
-        $status = $this->response->getStatus();
+        $status = $response->getStatus();
         if ($status === 0 || $status >= 400) {
             throw new RequestException('', $status);
         }
+
+        return $response;
     }
 
-    public function getResponse(): Response {
-        return $this->response;
-    }
-
-    public function get(string $url) {
+    public function get(string $url): Response {
         $this->options->inject($this->curl, [
             'return_transfer' => true,
         ]);
 
-        $this->fetchRequest($url, RequestOptions::HTTP_GET);
+        return $this->fetchRequest($url, RequestOptions::HTTP_GET);
     }
 
-    public function post(string $url, array $body, array $head = []) {
-        $this->options->inject($this->curl, [
-            'return_transfer' => true,
-            'form' => $body,
-            'head' => $head,
-        ]);
-
-        $this->fetchRequest($url, RequestOptions::HTTP_POST);
-    }
-
-    public function put(string $url, array $body, array $head = []) {
+    public function post(string $url, array $body, array $head = []): Response {
         $this->options->inject($this->curl, [
             'return_transfer' => true,
             'form' => $body,
             'head' => $head,
         ]);
 
-        $this->fetchRequest($url, RequestOptions::HTTP_PUT);
+        return $this->fetchRequest($url, RequestOptions::HTTP_POST);
     }
 
-    public function delete(string $url, array $body, array $head = []) {
+    public function put(string $url, array $body, array $head = []): Response {
         $this->options->inject($this->curl, [
             'return_transfer' => true,
             'form' => $body,
             'head' => $head,
         ]);
 
-        $this->fetchRequest($url, RequestOptions::HTTP_DELETE);
+        return $this->fetchRequest($url, RequestOptions::HTTP_PUT);
+    }
+
+    public function delete(string $url, array $body, array $head = []): Response {
+        $this->options->inject($this->curl, [
+            'return_transfer' => true,
+            'form' => $body,
+            'head' => $head,
+        ]);
+
+        return $this->fetchRequest($url, RequestOptions::HTTP_DELETE);
     }
 }
