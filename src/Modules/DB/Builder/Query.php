@@ -4,7 +4,6 @@
 namespace Freedom\Modules\DB\Builder;
 
 
-
 abstract class Query
 {
     protected static string $table;

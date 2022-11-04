@@ -4,7 +4,7 @@
 namespace Freedom\Modules\DB;
 
 
-use Winter666\Freedom\Modules\DB\Builder\Query;
+use Freedom\Modules\DB\Builder\Query;
 
 abstract class Model extends Query
 {
