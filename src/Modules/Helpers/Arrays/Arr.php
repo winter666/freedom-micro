@@ -86,4 +86,14 @@ class Arr
     public static function filter(array $array, callable $callback) {
         return array_values(array_filter($array, $callback));
     }
+
+    public static function length_diff(array $array1, array $array2): int {
+        $firstCount = count($array1);
+        $secondCount = count($array2);
+        if ($firstCount > $secondCount) {
+            return $firstCount - $secondCount;
+        }
+
+        return $secondCount - $firstCount;
+    }
 }

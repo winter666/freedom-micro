@@ -5,10 +5,15 @@ namespace Freedom\Modules\Http\Router;
 
 
 use Freedom\Modules\Helpers\Arrays\Arr;
+use Freedom\Modules\Helpers\String\Str;
+use Freedom\Modules\Http\Request;
 
 class Router
 {
+    private static string $uri_regexp = '/^(\{[a-zA-Z_]+\})$/';
+    private static string $uri_regexp_has_isset = '/^(\{[a-zA-Z_]+[?]\})$/';
     private static array $path = [];
+    private static array $list = [];
     private static string $current_http_method = '';
     public const HTTP_GET = 'GET';
     public const HTTP_POST = 'POST';
@@ -18,12 +23,28 @@ class Router
     }
 
     private static function compareUri(array $needle): bool {
-        if (count($needle) !== count(static::$path)) {
+        $useUriVal = false;
+        $useStrictUriVal = false;
+        $uriValPosition = null;
+        foreach ($needle as $key => $nValue) {
+            $dynamicMatch = preg_match(static::$uri_regexp_has_isset, $nValue);
+            $useStrictUriVal = preg_match(static::$uri_regexp, $nValue);
+            if ($dynamicMatch || $useStrictUriVal) {
+                $useUriVal = true;
+                $uriValPosition = $key;
+            }
+        }
+
+        if ((!$useUriVal && count($needle) !== count(static::$path)) || ($useStrictUriVal && count($needle) !== count(static::$path))) {
             return false;
         }
 
         foreach (static::$path as $pKey => $path) {
-            if (!isset($needle[$pKey]) || $needle[$pKey] !== $path) {
+            if (
+                !isset($needle[$pKey]) ||
+                ($needle[$pKey] !== $path && !$useUriVal) ||
+                ($needle[$pKey] !== $path && $useUriVal && $uriValPosition !== $pKey)
+            ) {
                 return false;
             }
         }
@@ -49,11 +70,31 @@ class Router
 
     private static function method(string $uri, array|string|callable $callback, string $httpMethod) {
         $needle = static::parseUriString($uri);
-        if (static::checkRoute($needle, $httpMethod)) {
+        $routeID = Str::random();
+        static::$list[$routeID] = [
+            'uri' => $uri,
+            'method' => $httpMethod,
+            'active' => !static::checkRoute($needle, $httpMethod),
+        ];
+
+        if (!static::$list[$routeID]['active']) {
             return;
         }
 
-        echo $callback();
+        $values = [];
+        foreach ($needle as $key => $item) {
+            if (preg_match(static::$uri_regexp_has_isset, $item)) {
+                $keyName = preg_replace('/[\{\}?]/', '', $item);
+                $values[$keyName] = static::$path[$key] ?? null;
+            }
+
+            if (preg_match(static::$uri_regexp, $item)) {
+                $keyName = preg_replace('/[\{\}]/', '', $item);
+                $values[$keyName] = static::$path[$key];
+            }
+        }
+
+        echo $callback(new Request($values));
     }
 
     public static function get(string $uri, array|string|callable $callback) {
@@ -62,5 +103,17 @@ class Router
 
     public static function post(string $uri, array|string|callable $callback) {
         static::method($uri, $callback, static::HTTP_POST);
+    }
+
+    public static function fallback(array|string|callable $callback, string $fallback_uri = '/404') {
+        foreach (static::$list as $val) {
+            if ($val['active']) return;
+        }
+
+        if (!static::compareUri(static::parseUriString($fallback_uri)) && static::$current_http_method === static::HTTP_GET) {
+            header('Location: ' . $fallback_uri);
+        }
+
+        echo $callback(new Request);
     }
 }
