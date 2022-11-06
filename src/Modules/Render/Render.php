@@ -4,6 +4,8 @@
 namespace Freedom\Modules\Render;
 
 
+use Freedom\Modules\Render\Exceptions\TemplateNotFoundException;
+
 class Render
 {
     private string $layout;
@@ -29,8 +31,17 @@ class Render
         echo ob_get_clean();
     }
 
-    public function renderTemplate(string $name)
+    public function hasTemplate(string $name): bool
     {
+        return isset($this->templates[$name]);
+    }
+
+    public function renderTemplate(string $name): string
+    {
+        if (!isset($this->templates[$name])) {
+            throw new TemplateNotFoundException($name);
+        }
+
         ob_start();
         foreach ($this->vars as $varName => $varVal) {
             if (preg_match('/[a-zA-Z]+/', $varName)) {
