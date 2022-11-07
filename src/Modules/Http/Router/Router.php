@@ -114,12 +114,12 @@ class Router
         static::method($uri, $callback, static::HTTP_POST);
     }
 
-    public static function fallback(array|string|callable $callback, string $fallback_uri = '/404') {
+    public static function fallback(array|string|callable $callback, bool $use_redirect = true, string $fallback_uri = '/404') {
         foreach (static::$list as $val) {
             if ($val['active']) return;
         }
 
-        if (!static::compareUri(static::parseUriString($fallback_uri)) && static::$current_http_method === static::HTTP_GET) {
+        if (!static::compareUri(static::parseUriString($fallback_uri)) && static::$current_http_method === static::HTTP_GET && $use_redirect) {
             header('Location: ' . $fallback_uri);
         }
 
