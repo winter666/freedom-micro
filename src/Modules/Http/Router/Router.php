@@ -26,6 +26,7 @@ class Router
         $useUriVal = false;
         $useStrictUriVal = false;
         $uriValPosition = null;
+        $dynamicMatch = false;
         foreach ($needle as $key => $nValue) {
             $dynamicMatch = preg_match(static::$uri_regexp_has_isset, $nValue);
             $useStrictUriVal = preg_match(static::$uri_regexp, $nValue);
@@ -35,7 +36,15 @@ class Router
             }
         }
 
-        if ((!$useUriVal && count($needle) !== count(static::$path)) || ($useStrictUriVal && count($needle) !== count(static::$path))) {
+        $wholeUrlString = implode('/', $needle);
+        $count = 0;
+        $useStrictUriVal ?
+            preg_replace('/\{[a-zA-Z_]+\}/', '', $wholeUrlString, -1, $count) :
+            preg_replace('/\{[a-zA-Z_]+[?]\}/', '', $wholeUrlString, -1, $count);
+
+        if ((!$useUriVal && count($needle) !== count(static::$path)) ||
+            ($useStrictUriVal && count($needle) !== count(static::$path)) ||
+            ($dynamicMatch && Arr::length_diff($needle, static::$path) > $count)) {
             return false;
         }
 
@@ -115,5 +124,9 @@ class Router
         }
 
         echo $callback(new Request);
+    }
+
+    public static function getList(): array {
+        return static::$list;
     }
 }
