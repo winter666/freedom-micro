@@ -10,7 +10,7 @@ use Freedom\Modules\Render\Exceptions\TemplateNotFoundException;
 
 class Layout
 {
-    public static function view(string $layout, array $templates): Render {
+    public static function view(string $layout, array $templates, array $bind = []): Render {
         $root = preg_replace('/public/', '', $_SERVER['DOCUMENT_ROOT'], 1);
         $__layout = $root . 'resources/layouts/'. $layout .  '/index.php';
         if (!file_exists($__layout)) {
@@ -26,6 +26,6 @@ class Layout
             }
         }
 
-        return new Render($__layout, $__templates);
+        return new Render($__layout, $__templates, $bind);
     }
 }

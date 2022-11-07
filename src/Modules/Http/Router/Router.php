@@ -7,6 +7,7 @@ namespace Freedom\Modules\Http\Router;
 use Freedom\Modules\Helpers\Arrays\Arr;
 use Freedom\Modules\Helpers\String\Str;
 use Freedom\Modules\Http\Request;
+use Freedom\Modules\Render\Render;
 
 class Router
 {
@@ -69,6 +70,28 @@ class Router
         return !static::compareUri($uriArray) || !static::compareMethod($constantMethod);
     }
 
+    private static function parseCallback(array|callable $callback, array $values = []) {
+        if (is_callable($callback)) {
+            return $callback(new Request($values));
+        } elseif (is_array($callback) && isset($callback['controller']) && isset($callback['method'])) {
+            $controller = new $callback['controller'];
+            $method = $callback['method'];
+            return $controller->$method(new Request($values));
+        }
+
+        return '';
+    }
+
+    private static function returnOrRender(callable|array $callback, array $values = []) {
+        $value = static::parseCallback($callback, $values);
+        if ($value instanceof Render) {
+            echo $value->render();
+            return;
+        }
+
+        echo $value;
+    }
+
     public static function init() {
         if (isset($_REQUEST['p'])) {
             static::$path = static::parseUriString($_GET['p']);
@@ -77,7 +100,7 @@ class Router
         static::$current_http_method = $_SERVER['REQUEST_METHOD'];
     }
 
-    private static function method(string $uri, array|string|callable $callback, string $httpMethod) {
+    private static function method(string $uri, array|callable $callback, string $httpMethod) {
         $needle = static::parseUriString($uri);
         $routeID = Str::random();
         static::$list[$routeID] = [
@@ -103,18 +126,18 @@ class Router
             }
         }
 
-        echo $callback(new Request($values));
+        static::returnOrRender($callback, $values);
     }
 
-    public static function get(string $uri, array|string|callable $callback) {
+    public static function get(string $uri, array|callable $callback) {
         static::method($uri, $callback, static::HTTP_GET);
     }
 
-    public static function post(string $uri, array|string|callable $callback) {
+    public static function post(string $uri, array|callable $callback) {
         static::method($uri, $callback, static::HTTP_POST);
     }
 
-    public static function fallback(array|string|callable $callback, bool $use_redirect = true, string $fallback_uri = '/404') {
+    public static function fallback(array|callable $callback, bool $use_redirect = true, string $fallback_uri = '/404') {
         foreach (static::$list as $val) {
             if ($val['active']) return;
         }
@@ -123,7 +146,7 @@ class Router
             header('Location: ' . $fallback_uri);
         }
 
-        echo $callback(new Request);
+        static::returnOrRender($callback);
     }
 
     public static function getList(): array {

@@ -12,15 +12,19 @@ class Render
     private array $templates;
     private array $vars;
 
-    public function __construct(string $layout, array $templates)
+    public function __construct(string $layout, array $templates, array $vars = [])
     {
         $this->layout = $layout;
         $this->templates = $templates;
+        $this->vars = $vars;
     }
 
     public function render(array $vars = [])
     {
-        $this->vars = $vars;
+        if (!empty($vars)) {
+            $this->vars = $vars;
+        }
+
         ob_start();
         foreach ($this->vars as $varName => $varVal) {
             if (preg_match('/[a-zA-Z]+/', $varName)) {
