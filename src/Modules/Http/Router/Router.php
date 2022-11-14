@@ -126,6 +126,12 @@ class Router
             }
         }
 
+        if (static::$current_http_method === self::HTTP_POST) {
+            foreach ($_POST as $key => $val) {
+                $values[$key] = $val;
+            }
+        }
+
         static::returnOrRender($callback, $values);
     }
 
