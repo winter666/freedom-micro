@@ -11,6 +11,7 @@ class Render
     private string $layout;
     private array $templates;
     private array $vars;
+    private array $scripts = [];
 
     public function __construct(string $layout, array $templates, array $vars = [])
     {
@@ -52,7 +53,23 @@ class Render
                 $$varName = $varVal;
             }
         }
+
         include $this->templates[$name];
         return ob_get_clean();
+    }
+
+    public function addJs(string $name, string $path, string $source_dir = 'public')
+    {
+        $root = $_SERVER['HTTP_X_FORWARDED_PROTO'] . '://' . $_SERVER['HTTP_HOST'] . '/';
+        $file = preg_replace('/[.]/', '/', $path) . '.js';
+        $__full = $root . $file;
+        $this->scripts[$name][] = $__full;
+    }
+
+    public function yieldJs(string $name)
+    {
+        foreach ($this->scripts[$name] ?? [] as $script) {
+            echo "<script src=\"{$script}\"></script>";
+        }
     }
 }
