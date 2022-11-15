@@ -12,6 +12,7 @@ class Render
     private array $templates;
     private array $vars;
     private array $scripts = [];
+    private array $styles = [];
 
     public function __construct(string $layout, array $templates, array $vars = [])
     {
@@ -32,6 +33,7 @@ class Render
                 $$varName = $varVal;
             }
         }
+
         include $this->layout;
         echo ob_get_clean();
     }
@@ -58,18 +60,34 @@ class Render
         return ob_get_clean();
     }
 
-    public function addJs(string $name, string $path, string $source_dir = 'public')
+    public function addJs(string $group, string $path)
     {
-        $root = $_SERVER['HTTP_X_FORWARDED_PROTO'] . '://' . $_SERVER['HTTP_HOST'] . '/';
-        $file = preg_replace('/[.]/', '/', $path) . '.js';
-        $__full = $root . $file;
-        $this->scripts[$name][] = $__full;
+        $this->scripts[$group][] =$this->formatFrontendItem($path, 'js');
     }
 
-    public function yieldJs(string $name)
+    public function addCss(string $group, string $path)
     {
-        foreach ($this->scripts[$name] ?? [] as $script) {
+        $this->styles[$group][] = $this->formatFrontendItem($path, 'css');
+    }
+
+    private function formatFrontendItem(string $path, string $ext): string
+    {
+        $root = $_SERVER['HTTP_X_FORWARDED_PROTO'] . '://' . $_SERVER['HTTP_HOST'] . '/';
+        $file = preg_replace('/[.]/', '/', $path) . '.' . $ext;
+        return $root . $file;
+    }
+
+    public function yieldJs(string $group)
+    {
+        foreach ($this->scripts[$group] ?? [] as $script) {
             echo "<script src=\"{$script}\"></script>";
+        }
+    }
+
+    public function yieldCss(string $group)
+    {
+        foreach ($this->styles[$group] ?? [] as $style) {
+            echo "<link rel=\"stylesheet\" href=\"{$style}\"/>";
         }
     }
 }
