@@ -51,7 +51,7 @@ class MigrationCommand extends CommandDispatcher
             }
 
         } catch (\Exception $e) {
-            echo 'ERROR: ' . $e->getMessage() . "\n";
+            echo '[ERROR]: ' . $e->getMessage() . "\n";
         }
     }
 }
