@@ -3,6 +3,7 @@
 
 use Freedom\Modules\Config\Config;
 use Freedom\Modules\Dotenv\Env;
+use Freedom\Modules\Storage\Session;
 
 function config(string $name): array {
     return Config::getInstance()->get($name);
@@ -21,5 +22,6 @@ function env_path() {
 }
 
 function get_root() {
-    return str_replace('/public', '', $_SERVER['DOCUMENT_ROOT']);
+    return Session::i()->get('project_path') ?? str_replace('/public', '', $_SERVER['DOCUMENT_ROOT']);
+
 }
