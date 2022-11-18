@@ -16,13 +16,14 @@ class MigrationCommand extends CommandDispatcher
 {
     public function handle()
     {
-        Schema::makeIfNotExists('migrations', function(Master $table) {
-            $table->id();
-            $table->string('name');
-            $table->timestamps();
-        });
-
         try {
+
+            Schema::makeIfNotExists('migrations', function (Master $table) {
+                $table->id();
+                $table->string('name');
+                $table->timestamps();
+            });
+
             $connection = Connection::getInstance();
             $statements = $connection
                 ->getConnection()
