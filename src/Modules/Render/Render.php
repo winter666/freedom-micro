@@ -87,7 +87,7 @@ class Render
     public function yieldCss(string $group)
     {
         foreach ($this->styles[$group] ?? [] as $style) {
-            echo "<link rel=\"stylesheet\" href=\"{$style}\"/>";
+            echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"{$style}\"/>";
         }
     }
 }
