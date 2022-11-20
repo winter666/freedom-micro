@@ -3,7 +3,7 @@
 
 namespace Freedom\Modules\Http\Router;
 
-
+use Freedom\Modules\Application;
 use Freedom\Modules\Helpers\Arrays\Arr;
 use Freedom\Modules\Http\Controller;
 use Freedom\Modules\Http\ControllerResolver;
@@ -22,6 +22,10 @@ class Router
 
     protected static ControllerResolver $controllerResolver;
 
+    public function __construct(protected Application $app)
+    {
+        
+    }
 
     public static function setControllerResolver(ControllerResolver $instance)
     {

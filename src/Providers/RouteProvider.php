@@ -3,8 +3,7 @@
 
 namespace Freedom\Providers;
 
-
-use Freedom\Modules\Http\Controller;
+use Freedom\Modules\Application;
 use Freedom\Modules\Http\ControllerResolver;
 use Freedom\Modules\Http\Router\Router;
 
@@ -18,7 +17,7 @@ class RouteProvider extends Provider
         $controllerResolver = $this->application
             ->singleton('controller_resolver', new ControllerResolver());
 
-        $controllerResolver->push('default', new Controller($this->application));
+        $this->application->singleton('router', fn(Application $app) => new Router($app));
         Router::setControllerResolver($controllerResolver);
     }
 }
