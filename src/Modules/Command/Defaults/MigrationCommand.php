@@ -5,7 +5,6 @@ namespace Freedom\Modules\Command\Defaults;
 
 
 use Freedom\Modules\Command\CommandDispatcher;
-use Freedom\Modules\DB\Connection;
 use Freedom\Modules\DB\Migration\Master;
 use Freedom\Modules\DB\Migration\Register;
 use Freedom\Modules\DB\Migration\Schema;
@@ -24,7 +23,7 @@ class MigrationCommand extends CommandDispatcher
                 $table->timestamps();
             });
 
-            $connection = Connection::getInstance();
+            $connection = $this->application->get('connection_resolver')->resolve('default');
             $statements = $connection
                 ->getConnection()
                 ->prepare("SELECT * FROM migrations");

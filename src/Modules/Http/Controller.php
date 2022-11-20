@@ -4,7 +4,13 @@
 namespace Freedom\Modules\Http;
 
 
-abstract class Controller
-{
+use Freedom\Modules\Application;
+use Freedom\Modules\TargetInterface;
 
+class Controller implements TargetInterface
+{
+    public function __construct(protected Application $app)
+    {
+
+    }
 }

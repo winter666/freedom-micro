@@ -6,11 +6,11 @@ use Freedom\Modules\Dotenv\Env;
 use Freedom\Modules\Storage\Session;
 
 function config(string $name): array {
-    return Config::getInstance()->get($name);
+    return (new Config())->get($name);
 }
 
 function env(string $name): string|null {
-    return Env::getInstance()->get($name);
+    return (new Env())->get($name);
 }
 
 function config_path() {

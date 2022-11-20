@@ -5,12 +5,32 @@ namespace Freedom\Modules\DB\Migration;
 
 
 use Freedom\Modules\DB\Connection;
+use Freedom\Modules\DB\ConnectionResolver;
 
 final class Schema
 {
+    protected string $connectionName = 'default';
+    protected static ConnectionResolver $connectionResolver;
+
+    public function getConnectionName(): string
+    {
+        return $this->connectionName;
+    }
+
+    public function getConnection(): Connection
+    {
+        return static::$connectionResolver->resolve($this->getConnectionName());
+    }
+
+    public static function setConnectionResolver(ConnectionResolver $instance)
+    {
+        static::$connectionResolver = $instance;
+    }
+
     public static function make(string $name, callable $boot)
     {
         echo "Start migrating {$name} table..." . "\n";
+        $schema = new Schema();
         $table = new Master();
         $boot($table);
         $columns = '';
@@ -39,7 +59,7 @@ final class Schema
         $fields = "{$columns} {$keys}";
         $sql = "CREATE TABLE {$name} (\n{$fields}\n)";
 
-        $connection = Connection::getInstance();
+        $connection = $schema->getConnection();
         $connection->getConnection()
             ->prepare($sql)
             ->execute();
@@ -55,8 +75,9 @@ final class Schema
 
     public static function makeIfNotExists(string $name, callable $boot)
     {
+        $schema = new Schema();
         $database = env('DB_NAME');
-        $connection = Connection::getInstance();
+        $connection = $schema->getConnection();
         $statement = $connection->getConnection()
             ->prepare("SHOW TABLES FROM {$database} LIKE '{$name}';");
         $statement->execute();

@@ -5,7 +5,8 @@ namespace Freedom\Modules\Http\Router;
 
 
 use Freedom\Modules\Helpers\Arrays\Arr;
-use Freedom\Modules\Helpers\String\Str;
+use Freedom\Modules\Http\Controller;
+use Freedom\Modules\Http\ControllerResolver;
 use Freedom\Modules\Http\Request;
 use Freedom\Modules\Render\Render;
 
@@ -18,6 +19,14 @@ class Router
     private static string $current_http_method = '';
     public const HTTP_GET = 'GET';
     public const HTTP_POST = 'POST';
+
+    protected static ControllerResolver $controllerResolver;
+
+
+    public static function setControllerResolver(ControllerResolver $instance)
+    {
+        static::$controllerResolver = $instance;
+    }
 
     private static function parseUriString(string $strUri): array {
         return Arr::filter(explode('/', $strUri), fn ($i) => (!empty(trim($i))));
@@ -74,7 +83,11 @@ class Router
         if (is_callable($callback)) {
             return $callback(new Request($values));
         } elseif (is_array($callback) && isset($callback['controller']) && isset($callback['method'])) {
-            $controller = new $callback['controller'];
+            /**
+             * @var Controller $controller
+             */
+            $controller = static::$controllerResolver->resolve('default');
+//            $controller = new $callback['controller']();
             $method = $callback['method'];
             return $controller->$method(new Request($values));
         }
@@ -102,14 +115,13 @@ class Router
 
     private static function method(string $uri, array|callable $callback, string $httpMethod) {
         $needle = static::parseUriString($uri);
-        $routeID = Str::random();
-        static::$list[$routeID] = [
+        static::$list[$uri] = [
             'uri' => $uri,
             'method' => $httpMethod,
             'active' => !static::checkRoute($needle, $httpMethod),
         ];
 
-        if (!static::$list[$routeID]['active']) {
+        if (!static::$list[$uri]['active']) {
             return;
         }
 
@@ -136,6 +148,7 @@ class Router
     }
 
     public static function get(string $uri, array|callable $callback) {
+        // TODO: Да где блять???
         static::method($uri, $callback, static::HTTP_GET);
     }
 
