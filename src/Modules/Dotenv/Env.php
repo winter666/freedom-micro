@@ -5,7 +5,10 @@ namespace Freedom\Modules\Dotenv;
 
 class Env
 {
-    public function getAll(): array {
+    private array $data;
+
+    public function __construct()
+    {
         $fileContent = file_get_contents(env_path());
         $rows = explode("\n", $fileContent);
         $data = [];
@@ -22,11 +25,11 @@ class Env
             }
         }
 
-        return $data;
+        $this->data = $data;
     }
 
     public function get(string $name): ?string {
-        $all = $this->getAll();
+        $all = $this->data;
         return $all[$name] ?? null;
     }
 }

@@ -13,7 +13,7 @@ class DatabaseProvider extends Provider
 {
     public function register()
     {
-        $env = $this->application->get('env');
+        $env = $this->app->get('env');
 
         $connection = new Connection(
             (string) $env->get('DB'),
@@ -26,7 +26,7 @@ class DatabaseProvider extends Provider
         /**
          * @var ConnectionResolver $connectionResolver
          */
-        $connectionResolver = $this->application
+        $connectionResolver = $this->app
             ->singleton('connection_resolver', new ConnectionResolver());
         $connectionResolver->push('default', $connection);
         Model::setConnectionResolver($connectionResolver);

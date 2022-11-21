@@ -4,9 +4,8 @@
 namespace Freedom\Modules\DB;
 
 use Freedom\Modules\DB\Exceptions\DBConnectException;
-use Freedom\Modules\TargetInterface;
 
-class Connection implements TargetInterface
+class Connection
 {
     private \PDO $connection;
 

@@ -5,30 +5,18 @@ namespace Freedom\Modules\DB;
 
 
 use Freedom\Modules\DB\Builder\QueryBuilder;
+use Freedom\Modules\DB\Traits\ConnectionResolverable;
 
 abstract class Model
 {
+    use ConnectionResolverable;
+
     protected string $table = '';
     protected string $connectionName = 'default';
-    protected static ConnectionResolver $connectionResolver;
 
-    public function getTable(): string {
+    public function getTable(): string
+    {
         return $this->table;
-    }
-
-    public function getConnectionName(): string
-    {
-        return $this->connectionName;
-    }
-
-    public static function setConnectionResolver(ConnectionResolver $instance)
-    {
-        static::$connectionResolver = $instance;
-    }
-
-    public function getConnection(): Connection
-    {
-        return static::$connectionResolver->resolve($this->getConnectionName());
     }
 
     public function newQuery(): QueryBuilder

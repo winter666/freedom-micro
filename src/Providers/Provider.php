@@ -6,10 +6,12 @@ namespace Freedom\Providers;
 
 use Freedom\Modules\Application;
 
-abstract class Provider implements ProviderInterface
+abstract class Provider
 {
-    public function __construct(protected Application $application)
+    public function __construct(protected Application $app)
     {
 
     }
+
+    abstract public function register();
 }

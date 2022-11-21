@@ -12,11 +12,11 @@ use Freedom\Modules\Render\Render;
 
 class Router
 {
-    private static string $uri_regexp = '/^(\{[a-zA-Z_]+\})$/';
-    private static string $uri_regexp_has_isset = '/^(\{[a-zA-Z_]+[?]\})$/';
-    private static array $path = [];
-    private static string $current_http_method = '';
-    private static bool $isActive = false;
+    protected static string $uri_regexp = '/^(\{[a-zA-Z_]+\})$/';
+    protected static string $uri_regexp_has_isset = '/^(\{[a-zA-Z_]+[?]\})$/';
+    protected static array $path = [];
+    protected static string $current_http_method = '';
+    protected static bool $isActive = false;
     public const HTTP_GET = 'GET';
     public const HTTP_POST = 'POST';
     protected const STATUS_FALLBACK = 'FALLBACK';
@@ -30,11 +30,11 @@ class Router
         static::$controllerResolver = $instance;
     }
 
-    private static function parseUriString(string $strUri): array {
+    protected static function parseUriString(string $strUri): array {
         return Arr::filter(explode('/', $strUri), fn ($i) => (!empty(trim($i))));
     }
 
-    private static function compareUri(array $needle): bool {
+    protected static function compareUri(array $needle): bool {
         $useUriVal = false;
         $useStrictUriVal = false;
         $uriValPosition = null;
@@ -82,7 +82,7 @@ class Router
         static::$isActive = strlen(static::$current_http_method) > 0;
     }
 
-    private static function method(string $uri, array|callable $callback, string $httpMethod) {
+    protected static function method(string $uri, array|callable $callback, string $httpMethod) {
         $needle = static::parseUriString($uri);
         $values = [];
         foreach ($needle as $key => $item) {

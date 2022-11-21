@@ -4,9 +4,23 @@
 namespace Freedom\Modules\DB;
 
 
-use Freedom\Modules\Resolver;
 
-class ConnectionResolver extends Resolver
+class ConnectionResolver
 {
+    protected array $targets = [];
 
+    public function resolve($key)
+    {
+        return $this->targets[$key];
+    }
+
+    public function push($key, Connection $target)
+    {
+        $this->targets[$key] = $target;
+    }
+
+    public function has($key): bool
+    {
+        return isset($this->targets[$key]);
+    }
 }
