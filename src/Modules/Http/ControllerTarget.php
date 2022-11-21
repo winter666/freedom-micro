@@ -6,9 +6,8 @@ namespace Freedom\Modules\Http;
 
 use Freedom\Modules\Application;
 use Freedom\Modules\Helpers\Arrays\Arr;
-use Freedom\Modules\TargetInterface;
 
-class ControllerTarget implements TargetInterface
+class ControllerTarget
 {
     public function __construct(protected Application $app, protected array $target, protected Request $request) {}
 
