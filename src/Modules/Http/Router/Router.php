@@ -117,14 +117,15 @@ class Router
     }
 
     protected static function handle() {
-        $key = '/' . implode('/',static::$path) . '@' . static::$current_http_method;
+        $currentKey = '/' . implode('/',static::$path) . '@' . static::$current_http_method;
+        $key = static::$controllerResolver->match($currentKey, fn ($array, $cur_method) => static::compareUri($array['path']) && $cur_method == $array['method']);
 
-        if (!static::$controllerResolver->has($key)) {
-            if (!static::$controllerResolver->has(static::STATUS_FALLBACK)) {
+        if (is_null($key)) {
+            if (!static::$controllerResolver->has(static::STATUS_FALLBACK . '@' . static::$current_http_method)) {
                 throw new \Exception('Route "/'. implode('/',static::$path) . '" was not found');
             }
 
-            $key = static::STATUS_FALLBACK;
+            $key = static::STATUS_FALLBACK . '@' . static::$current_http_method;
         }
 
         /**
@@ -151,7 +152,7 @@ class Router
     public static function fallback(array|callable $callback) {
         $app = static::$controllerResolver->getApplication();
         static::$controllerResolver->push(
-            static::STATUS_FALLBACK,
+            static::STATUS_FALLBACK . '@' . static::$current_http_method,
             new ControllerTarget($app, is_array($callback) ? $callback : [$callback], new Request())
         );
     }
