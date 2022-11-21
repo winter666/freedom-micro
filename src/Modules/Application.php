@@ -7,6 +7,18 @@ namespace Freedom\Modules;
 class Application
 {
     protected array $singletones = [];
+    protected static Application $instance;
+
+    protected function __construct() {}
+
+    public static function getInstance(): Application
+    {
+        if (empty(static::$instance)) {
+            static::$instance = new static();
+        }
+
+        return static::$instance;
+    }
 
     public function singleton($key, $instance)
     {
