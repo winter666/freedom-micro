@@ -11,7 +11,8 @@ function app(): Application {
 }
 
 function config(string $name): array {
-    return (new Config())->get($name);
+    $config = app()->get('config') ?? new Config();
+    return $config->get($name);
 }
 
 function env(string $name): string|null {
