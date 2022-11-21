@@ -6,12 +6,7 @@ namespace Freedom\Modules\Http;
 
 class Request
 {
-    private array $fields = [];
-
-    public function __construct(array $values = [])
-    {
-        $this->fields = $values;
-    }
+    public function __construct(private array $fields = []) {}
 
     public function get(string $key)
     {

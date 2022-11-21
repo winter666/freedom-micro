@@ -72,24 +72,6 @@ class Router
         return true;
     }
 
-    private static function compareMethod(string $constantMethod): bool {
-        return static::$current_http_method === $constantMethod;
-    }
-
-    private static function checkRoute(array $uriArray, string $constantMethod): bool {
-        return !static::compareUri($uriArray) || !static::compareMethod($constantMethod);
-    }
-
-    private static function returnOrRender(callable|array $callback, array $values = []) {
-        $value = static::parseCallback($callback, $values);
-        if ($value instanceof Render) {
-            echo $value->render();
-            return;
-        }
-
-        echo $value;
-    }
-
     public static function init() {
         if (isset($_REQUEST['p'])) {
             static::$path = static::parseUriString($_GET['p']);
@@ -107,7 +89,7 @@ class Router
                 $values[$keyName] = static::$path[$key] ?? null;
             }
 
-            if (preg_match(static::$uri_regexp, $item)) {
+            if (preg_match(static::$uri_regexp, $item) && isset(static::$path[$key])) {
                 $keyName = preg_replace('/[\{\}]/', '', $item);
                 $values[$keyName] = static::$path[$key];
             }
@@ -122,7 +104,7 @@ class Router
         $app = static::$controllerResolver->getApplication();
         static::$controllerResolver->push(
             $uri . '@' . $httpMethod,
-            new ControllerTarget($app, is_array($callback) ? $callback : [$callback], $values)
+            new ControllerTarget($app, is_array($callback) ? $callback : [$callback], new Request($values))
         );
     }
 
@@ -162,7 +144,7 @@ class Router
         $app = static::$controllerResolver->getApplication();
         static::$controllerResolver->push(
             static::STATUS_FALLBACK,
-            new ControllerTarget($app, is_array($callback) ? $callback : [$callback])
+            new ControllerTarget($app, is_array($callback) ? $callback : [$callback], new Request())
         );
     }
 }
