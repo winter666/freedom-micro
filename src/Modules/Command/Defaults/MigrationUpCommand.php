@@ -11,7 +11,7 @@ use Freedom\Modules\DB\Migration\Schema;
 use Freedom\Modules\Helpers\Arrays\Arr;
 use Freedom\Modules\Storage\Session;
 
-class MigrationCommand extends CommandDispatcher
+class MigrationUpCommand extends CommandDispatcher
 {
     public function handle()
     {

@@ -88,11 +88,16 @@ final class Schema
 
     public static function dropIfExists(string $name)
     {
-        // DROP if exists
+        echo "Start rolling-back {$name}";
+        (new Schema())->drop($name, true);
+        echo "Rolling-back {$name} successful";
     }
 
-    public static function drop(string $name)
-    {
-        // DROP
+    protected function drop(string $name, bool $ifExists = false) {
+        $sql = 'DROP TABLE' . ($ifExists ? ' IF EXISTS ': ' ') . "{$name};";
+        $connection = $this->getConnection();
+        $connection->getConnection()
+            ->prepare($sql)
+            ->execute();
     }
 }
