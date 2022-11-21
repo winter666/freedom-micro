@@ -5,8 +5,8 @@ namespace Freedom\Modules\Http\Router;
 
 use Freedom\Modules\Application;
 use Freedom\Modules\Helpers\Arrays\Arr;
-use Freedom\Modules\Http\Controller;
 use Freedom\Modules\Http\ControllerResolver;
+use Freedom\Modules\Http\ControllerTarget;
 use Freedom\Modules\Http\Request;
 use Freedom\Modules\Render\Render;
 
@@ -15,17 +15,14 @@ class Router
     private static string $uri_regexp = '/^(\{[a-zA-Z_]+\})$/';
     private static string $uri_regexp_has_isset = '/^(\{[a-zA-Z_]+[?]\})$/';
     private static array $path = [];
-    private static array $list = [];
     private static string $current_http_method = '';
     public const HTTP_GET = 'GET';
     public const HTTP_POST = 'POST';
+    protected const STATUS_FALLBACK = 'FALLBACK';
 
     protected static ControllerResolver $controllerResolver;
 
-    public function __construct(protected Application $app)
-    {
-        
-    }
+    public function __construct(protected Application $app) {}
 
     public static function setControllerResolver(ControllerResolver $instance)
     {
@@ -83,22 +80,6 @@ class Router
         return !static::compareUri($uriArray) || !static::compareMethod($constantMethod);
     }
 
-    private static function parseCallback(array|callable $callback, array $values = []) {
-        if (is_callable($callback)) {
-            return $callback(new Request($values));
-        } elseif (is_array($callback) && isset($callback['controller']) && isset($callback['method'])) {
-            /**
-             * @var Controller $controller
-             */
-            $controller = static::$controllerResolver->resolve('default');
-//            $controller = new $callback['controller']();
-            $method = $callback['method'];
-            return $controller->$method(new Request($values));
-        }
-
-        return '';
-    }
-
     private static function returnOrRender(callable|array $callback, array $values = []) {
         $value = static::parseCallback($callback, $values);
         if ($value instanceof Render) {
@@ -114,21 +95,11 @@ class Router
             static::$path = static::parseUriString($_GET['p']);
         }
 
-        static::$current_http_method = $_SERVER['REQUEST_METHOD'];
+        static::$current_http_method = $_SERVER['REQUEST_METHOD'] ?? '';
     }
 
     private static function method(string $uri, array|callable $callback, string $httpMethod) {
         $needle = static::parseUriString($uri);
-        static::$list[$uri] = [
-            'uri' => $uri,
-            'method' => $httpMethod,
-            'active' => !static::checkRoute($needle, $httpMethod),
-        ];
-
-        if (!static::$list[$uri]['active']) {
-            return;
-        }
-
         $values = [];
         foreach ($needle as $key => $item) {
             if (preg_match(static::$uri_regexp_has_isset, $item)) {
@@ -148,11 +119,38 @@ class Router
             }
         }
 
-        static::returnOrRender($callback, $values);
+        $app = static::$controllerResolver->getApplication();
+        static::$controllerResolver->push(
+            $uri . '@' . $httpMethod,
+            new ControllerTarget($app, is_array($callback) ? $callback : [$callback], $values)
+        );
+    }
+
+    public static function handle() {
+        $key = '/' . implode('/',static::$path) . '@' . static::$current_http_method;
+
+        if (!static::$controllerResolver->has($key)) {
+            if (!static::$controllerResolver->has(static::STATUS_FALLBACK)) {
+                throw new \Exception('Route "/'. implode('/',static::$path) . '" was not found');
+            }
+
+            $key = static::STATUS_FALLBACK;
+        }
+
+        /**
+         * @var ControllerTarget $target
+         */
+        $target = static::$controllerResolver->resolve($key);
+        $value = $target->handle();
+        if ($value instanceof Render) {
+            echo $value->render();
+            return;
+        }
+
+        echo $value;
     }
 
     public static function get(string $uri, array|callable $callback) {
-        // TODO: Да где блять???
         static::method($uri, $callback, static::HTTP_GET);
     }
 
@@ -160,19 +158,11 @@ class Router
         static::method($uri, $callback, static::HTTP_POST);
     }
 
-    public static function fallback(array|callable $callback, bool $use_redirect = true, string $fallback_uri = '/404') {
-        foreach (static::$list as $val) {
-            if ($val['active']) return;
-        }
-
-        if (!static::compareUri(static::parseUriString($fallback_uri)) && static::$current_http_method === static::HTTP_GET && $use_redirect) {
-            header('Location: ' . $fallback_uri);
-        }
-
-        static::returnOrRender($callback);
-    }
-
-    public static function getList(): array {
-        return static::$list;
+    public static function fallback(array|callable $callback) {
+        $app = static::$controllerResolver->getApplication();
+        static::$controllerResolver->push(
+            static::STATUS_FALLBACK,
+            new ControllerTarget($app, is_array($callback) ? $callback : [$callback])
+        );
     }
 }

@@ -15,9 +15,12 @@ class RouteProvider extends Provider
          * @var ControllerResolver $controllerResolver
          */
         $controllerResolver = $this->application
-            ->singleton('controller_resolver', new ControllerResolver());
+            ->singleton('controller_resolver', new ControllerResolver($this->application));
 
-        $this->application->singleton('router', fn(Application $app) => new Router($app));
+        $this->application->singleton('router', new Router($this->application));
         Router::setControllerResolver($controllerResolver);
+        Router::init();
+        require_once get_root() . '/router/index.php';
+        Router::handle();
     }
 }

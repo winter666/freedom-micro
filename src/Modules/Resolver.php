@@ -18,4 +18,9 @@ abstract class Resolver
     {
         $this->targets[$key] = $target;
     }
+
+    public function has($key): bool
+    {
+        return isset($this->targets[$key]);
+    }
 }
