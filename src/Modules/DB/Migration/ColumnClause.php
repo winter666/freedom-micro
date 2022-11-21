@@ -111,7 +111,7 @@ class ColumnClause
         }
 
         if ($this->unique_key) {
-            $queryStr .= ' UNIQUE KEY('.$this->name.')';
+            $queryStr .= '#UNIQUE KEY('.$this->name.')';
         }
 
         return $queryStr;

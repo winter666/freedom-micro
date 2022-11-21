@@ -23,7 +23,7 @@ class MigrationCommand extends CommandDispatcher
                 $table->timestamps();
             });
 
-            $connection = $this->application->get('connection_resolver')->resolve('default');
+            $connection = $this->app->get('connection_resolver')->resolve('default');
             $statements = $connection
                 ->getConnection()
                 ->prepare("SELECT * FROM migrations");

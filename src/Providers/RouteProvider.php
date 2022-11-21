@@ -21,6 +21,6 @@ class RouteProvider extends Provider
         Router::setControllerResolver($controllerResolver);
         Router::init();
         require_once get_root() . '/router/index.php';
-        Router::handle();
+        Router::handleIfActive();
     }
 }

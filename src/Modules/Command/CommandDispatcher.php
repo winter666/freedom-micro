@@ -8,6 +8,6 @@ use Freedom\Modules\Application;
 
 abstract class CommandDispatcher
 {
-    public function __construct(protected Application $application) {}
+    public function __construct(protected Application $app) {}
     abstract public function handle();
 }

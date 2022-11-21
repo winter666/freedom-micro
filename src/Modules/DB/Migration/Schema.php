@@ -30,7 +30,12 @@ final class Schema
     public static function make(string $name, callable $boot)
     {
         echo "Start migrating {$name} table..." . "\n";
-        $schema = new Schema();
+        (new Schema())->createTable($name, $boot);
+        echo "Table {$name} created successfully!" . "\n";
+    }
+
+    public function createTable(string $name, callable $boot)
+    {
         $table = new Master();
         $boot($table);
         $columns = '';
@@ -58,8 +63,7 @@ final class Schema
 
         $fields = "{$columns} {$keys}";
         $sql = "CREATE TABLE {$name} (\n{$fields}\n)";
-
-        $connection = $schema->getConnection();
+        $connection = $this->getConnection();
         $connection->getConnection()
             ->prepare($sql)
             ->execute();
@@ -70,18 +74,21 @@ final class Schema
                 "INSERT INTO migrations (name, created_at, updated_at) VALUES ('{$name}', '{$now}', '{$now}')"
             )
             ->execute();
-        echo "Table {$name} created successfully!" . "\n";
+    }
+
+    public function isExistsTable(string $name): bool
+    {
+        $database = env('DB_NAME');
+        $connection = $this->getConnection();
+        $statement = $connection->getConnection()
+            ->prepare("SHOW TABLES FROM {$database} LIKE '{$name}';");
+        $statement->execute();
+        return !empty($statement->fetchAll());
     }
 
     public static function makeIfNotExists(string $name, callable $boot)
     {
-        $schema = new Schema();
-        $database = env('DB_NAME');
-        $connection = $schema->getConnection();
-        $statement = $connection->getConnection()
-            ->prepare("SHOW TABLES FROM {$database} LIKE '{$name}';");
-        $statement->execute();
-        $exists = !empty($statement->fetchAll());
+        $exists = (new Schema())->isExistsTable($name);
         if (!$exists) {
             self::make($name, $boot);
         } else {

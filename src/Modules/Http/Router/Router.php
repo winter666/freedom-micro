@@ -16,6 +16,7 @@ class Router
     private static string $uri_regexp_has_isset = '/^(\{[a-zA-Z_]+[?]\})$/';
     private static array $path = [];
     private static string $current_http_method = '';
+    private static bool $isActive = false;
     public const HTTP_GET = 'GET';
     public const HTTP_POST = 'POST';
     protected const STATUS_FALLBACK = 'FALLBACK';
@@ -78,6 +79,7 @@ class Router
         }
 
         static::$current_http_method = $_SERVER['REQUEST_METHOD'] ?? '';
+        static::$isActive = strlen(static::$current_http_method) > 0;
     }
 
     private static function method(string $uri, array|callable $callback, string $httpMethod) {
@@ -108,7 +110,13 @@ class Router
         );
     }
 
-    public static function handle() {
+    public static function handleIfActive() {
+        if (static::$isActive) {
+            static::handle();
+        }
+    }
+
+    protected static function handle() {
         $key = '/' . implode('/',static::$path) . '@' . static::$current_http_method;
 
         if (!static::$controllerResolver->has($key)) {
