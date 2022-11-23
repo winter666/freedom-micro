@@ -4,12 +4,23 @@
 namespace Freedom\Modules\DB;
 
 
-use Freedom\Modules\DB\Builder\Query;
+use Freedom\Modules\DB\Builder\QueryBuilder;
+use Freedom\Modules\DB\Traits\ConnectionResolverable;
 
-abstract class Model extends Query
+abstract class Model
 {
-    protected static string $table = '';
-    protected function getTable(): string {
-        return static::$table;
+    use ConnectionResolverable;
+
+    protected string $table = '';
+    protected string $connectionName = 'default';
+
+    public function getTable(): string
+    {
+        return $this->table;
+    }
+
+    public function newQuery(): QueryBuilder
+    {
+        return new QueryBuilder($this, $this->getConnection());
     }
 }

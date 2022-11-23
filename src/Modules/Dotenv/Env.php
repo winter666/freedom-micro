@@ -5,19 +5,10 @@ namespace Freedom\Modules\Dotenv;
 
 class Env
 {
-    private static Env|null $instance = null;
+    private array $data;
 
-    private function __construct() {}
-
-    public static function getInstance(): static {
-        if (static::$instance === null) {
-            static::$instance = new static;
-        }
-
-        return static::$instance;
-    }
-
-    public function getAll(): array {
+    public function __construct()
+    {
         $fileContent = file_get_contents(env_path());
         $rows = explode("\n", $fileContent);
         $data = [];
@@ -34,11 +25,11 @@ class Env
             }
         }
 
-        return $data;
+        $this->data = $data;
     }
 
-    public function get(string $name): string|null {
-        $all = $this->getAll();
+    public function get(string $name): ?string {
+        $all = $this->data;
         return $all[$name] ?? null;
     }
 }

@@ -16,8 +16,6 @@ use Freedom\Modules\DB\Model;
 class QueryBuilder
 {
     private int|null $limit = null;
-    private string $table;
-    private string $model;
 
     private SelectClause $selectClause;
     private WhereClause $whereClause;
@@ -25,18 +23,13 @@ class QueryBuilder
     private DeleteClause $deleteClause;
     private CreateClause $createClause;
 
-    private Connection $connection;
-
-    public function __construct(array $options)
+    public function __construct(protected Model $model, protected Connection $connection)
     {
-        $this->table = $options['table'];
-        $this->model = $options['model'];
-        $this->selectClause = new SelectClause($options['table']);
-        $this->updateClause = new UpdateClause($options['table']);
-        $this->deleteClause = new DeleteClause($options['table']);
-        $this->createClause = new CreateClause($options['table']);
+        $this->selectClause = new SelectClause($model->getTable());
+        $this->updateClause = new UpdateClause($model->getTable());
+        $this->deleteClause = new DeleteClause($model->getTable());
+        $this->createClause = new CreateClause($model->getTable());
         $this->whereClause = new WhereClause();
-        $this->connection = Connection::getInstance();
     }
 
     public function select(array $fields): QueryBuilder

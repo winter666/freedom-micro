@@ -7,32 +7,16 @@ use Freedom\Modules\DB\Exceptions\DBConnectException;
 
 class Connection
 {
-    private static Connection|null $instance = null;
     private \PDO $connection;
-    public string $connection_id;
-    public array $connections;
-    private string $db;
-    private string $host;
-    private string $db_name;
-    private string $username;
-    private string $password;
 
-    private function __construct() {
-        $this->db = (string) env('DB');
-        $this->host = (string) env('DB_HOST');
-        $this->db_name = (string) env('DB_NAME');
-        $this->username = (string) env('DB_USERNAME');
-        $this->password = (string) env('DB_PASSWORD');
-
+    public function __construct(
+        private string $db,
+        private string $host,
+        private string $db_name,
+        private string $username,
+        private string $password
+    ) {
         $this->setConnection();
-    }
-
-    public static function getInstance(): static {
-        if (static::$instance === null) {
-            static::$instance = new Connection();
-        }
-
-        return static::$instance;
     }
 
     public function getConnection(): \PDO {
@@ -45,8 +29,5 @@ class Connection
         } catch (\PDOException $e) {
             throw new DBConnectException($e->getMessage(), $e->getCode(), $e->getPrevious());
         }
-
-        $this->connection_id = rand(1000, 9999);
-        $this->connections[$this->connection_id] = $this->connection;
     }
 }

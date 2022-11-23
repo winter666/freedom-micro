@@ -4,13 +4,13 @@
 namespace Freedom\Modules\Command;
 
 
-use Freedom\Modules\Command\Defaults\MigrationCommand;
+use Freedom\Modules\Command\Defaults\MigrationUpCommand;
 
 abstract class CommandRegister
 {
     private const COMMAND_MIGRATION = 'migrate';
     private const DEFAULT_COMMANDS = [
-        self::COMMAND_MIGRATION => MigrationCommand::class,
+        self::COMMAND_MIGRATION => MigrationUpCommand::class,
     ];
 
     private array $handlers = [];

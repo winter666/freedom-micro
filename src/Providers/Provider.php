@@ -1,15 +1,17 @@
 <?php
 
 
-namespace Freedom\Modules\Http;
+namespace Freedom\Providers;
 
 
 use Freedom\Modules\Application;
 
-class Controller
+abstract class Provider
 {
     public function __construct(protected Application $app)
     {
 
     }
+
+    abstract public function register();
 }

@@ -4,13 +4,23 @@
 namespace Freedom\Modules\DB\Migration;
 
 
-use Freedom\Modules\DB\Connection;
+use Freedom\Modules\DB\Traits\ConnectionResolverable;
 
 final class Schema
 {
+    use ConnectionResolverable;
+
+    protected string $connectionName = 'default';
+
     public static function make(string $name, callable $boot)
     {
         echo "Start migrating {$name} table..." . "\n";
+        (new Schema())->createTable($name, $boot);
+        echo "Table {$name} created successfully!" . "\n";
+    }
+
+    public function createTable(string $name, callable $boot)
+    {
         $table = new Master();
         $boot($table);
         $columns = '';
@@ -38,8 +48,7 @@ final class Schema
 
         $fields = "{$columns} {$keys}";
         $sql = "CREATE TABLE {$name} (\n{$fields}\n)";
-
-        $connection = Connection::getInstance();
+        $connection = $this->getConnection();
         $connection->getConnection()
             ->prepare($sql)
             ->execute();
@@ -50,17 +59,21 @@ final class Schema
                 "INSERT INTO migrations (name, created_at, updated_at) VALUES ('{$name}', '{$now}', '{$now}')"
             )
             ->execute();
-        echo "Table {$name} created successfully!" . "\n";
+    }
+
+    public function isExistsTable(string $name): bool
+    {
+        $database = env('DB_NAME');
+        $connection = $this->getConnection();
+        $statement = $connection->getConnection()
+            ->prepare("SHOW TABLES FROM {$database} LIKE '{$name}';");
+        $statement->execute();
+        return !empty($statement->fetchAll());
     }
 
     public static function makeIfNotExists(string $name, callable $boot)
     {
-        $database = env('DB_NAME');
-        $connection = Connection::getInstance();
-        $statement = $connection->getConnection()
-            ->prepare("SHOW TABLES FROM {$database} LIKE '{$name}';");
-        $statement->execute();
-        $exists = !empty($statement->fetchAll());
+        $exists = (new Schema())->isExistsTable($name);
         if (!$exists) {
             self::make($name, $boot);
         } else {
@@ -75,11 +88,16 @@ final class Schema
 
     public static function dropIfExists(string $name)
     {
-        // DROP if exists
+        echo "Start rolling-back {$name}";
+        (new Schema())->drop($name, true);
+        echo "Rolling-back {$name} successful";
     }
 
-    public static function drop(string $name)
-    {
-        // DROP
+    protected function drop(string $name, bool $ifExists = false) {
+        $sql = 'DROP TABLE' . ($ifExists ? ' IF EXISTS ': ' ') . "{$name};";
+        $connection = $this->getConnection();
+        $connection->getConnection()
+            ->prepare($sql)
+            ->execute();
     }
 }
